@@ -7,6 +7,7 @@ jobs:
     runs-on: windows-2019
     env:
       COMPCXX: g++
+      CXXFLAGS: -fno-asynchronous-unwind-tables
     defaults:
       run:
         shell: msys2 {0}
@@ -15,7 +16,6 @@ jobs:
         with:
           msystem: mingw64
           install: mingw-w64-x86_64-gcc make tar
-          update: true
       - run: g++ --version
       - uses: actions/checkout@v3
         with:

@@ -284,7 +284,7 @@ fn compress(dir: &str, file: &str) {
 }
 
 fn hooks() {
-    println!("cargo:rerun-if-env-changed=CXX");
+    println!("cargo:rerun-if-env-changed=COMPCXX");
     println!("cargo:rerun-if-env-changed=CXXFLAGS");
     println!("cargo:rerun-if-env-changed=SDE_PATH");
 

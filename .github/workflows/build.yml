@@ -24,7 +24,7 @@ jobs:
           path: intel-sde
         id: sde
         continue-on-error: true
-      - run: 7z e intel-sde/sde-external-9.0.0-2021-11-07-win.tar.xz && 7z x sde-external-9.0.0-2021-11-07-win.tar && echo SDE_PATH=$(cygpath -u $env:GITHUB_WORKSPACE\sde-external-9.0.0-2021-11-07-win\sde.exe) >> $env:GITHUB_ENV
+      - run: tar xvf intel-sde/sde-external-9.0.0-2021-11-07-win.tar.xz && echo SDE_PATH=$(cygpath -u $env:GITHUB_WORKSPACE\sde-external-9.0.0-2021-11-07-win\sde.exe) >> $env:GITHUB_ENV
         if: steps.sde.outcome == 'success'
       - uses: actions/cache@v3
         with:

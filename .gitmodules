@@ -1,6 +1,6 @@
 [submodule "Stockfish"]
 	path = Stockfish
-	url = https://github.com/official-stockfish/Stockfish.git
+	url = https://github.com/niklasf/Stockfish.git
 [submodule "Fairy-Stockfish"]
 	path = Fairy-Stockfish
 	url = https://github.com/ianfab/Fairy-Stockfish.git

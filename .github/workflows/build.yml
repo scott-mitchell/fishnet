@@ -5,6 +5,8 @@ on: [push, pull_request]
 jobs:
   windows-x86-64:
     runs-on: windows-2022
+    env:
+      CXXFLAGS: -fno-asynchronous-unwind-tables
     steps:
       - uses: actions/checkout@v3
         with:

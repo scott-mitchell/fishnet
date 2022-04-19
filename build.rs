@@ -103,7 +103,7 @@ impl Target {
                 ),
             )
             .arg("-B")
-            .args(env::var("CXX").ok().map(|cxx| format!("CXX={}", cxx)))
+            .args(env::var("COMPCXX").ok().map(|cxx| format!("COMPCXX={}", cxx)))
             .arg(format!(
                 "COMP={}",
                 if windows {

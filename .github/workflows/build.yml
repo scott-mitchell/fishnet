@@ -5,6 +5,8 @@ on: [push, pull_request]
 jobs:
   windows-x86-64:
     runs-on: windows-2019
+    env:
+      COMPCXX: g++
     defaults:
       run:
         shell: msys2 {0}

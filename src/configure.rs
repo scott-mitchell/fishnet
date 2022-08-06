@@ -110,7 +110,7 @@ impl FromStr for Endpoint {
 }
 
 impl Endpoint {
-    fn is_development(&self) -> bool {
+    pub fn is_development(&self) -> bool {
         self.url.host_str() != Some("lichess.org")
     }
 }

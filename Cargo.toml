@@ -1,6 +1,6 @@
 [package]
 name = "fishnet"
-version = "2.6.4-dev"
+version = "2.6.4-irwin-dev"
 description = "Distributed Stockfish analysis for lichess.org"
 repository = "https://github.com/lichess-org/fishnet"
 readme = "README.md"
@@ -14,10 +14,10 @@ exclude = [
     "Stockfish/**/*.s",
     "Stockfish/**/.depend",
     "Stockfish/**/*.nnue",
-    "Fairy-Stockfish/**/*.o",
-    "Fairy-Stockfish/**/*.s",
-    "Fairy-Stockfish/**/.depend",
-    "Fairy-Stockfish/**/*.nnue",
+    "MultiVariant-Stockfish/**/*.o",
+    "MultiVariant-Stockfish/**/*.s",
+    "MultiVariant-Stockfish/**/.depend",
+    "MultiVariant-Stockfish/**/*.nnue",
 ]
 
 [profile.release]

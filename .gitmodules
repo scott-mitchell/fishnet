@@ -1,6 +1,6 @@
 [submodule "Stockfish"]
 	path = Stockfish
 	url = https://github.com/official-stockfish/Stockfish.git
-[submodule "Fairy-Stockfish"]
-	path = Fairy-Stockfish
-	url = https://github.com/ianfab/Fairy-Stockfish.git
+[submodule "MultiVariant-Stockfish"]
+	path = MultiVariant-Stockfish
+	url = git@github.com:ddugovic/Stockfish.git

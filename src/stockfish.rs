@@ -224,7 +224,7 @@ impl StockfishActor {
                 if line.trim_end() == "readyok" {
                     self.logger.debug("Engine is ready");
                     break;
-                } else if !line.starts_with("Stockfish ") && !line.starts_with("Fairy-Stockfish ") {
+                } else if !line.starts_with("Stockfish ") && !line.starts_with("MultiVariant-Stockfish ") {
                     // ignore preamble
                     self.logger.warn(&format!(
                         "Unexpected engine initialization output: {}",
@@ -249,15 +249,6 @@ impl StockfishActor {
         stdin.write_all(b"ucinewgame\n").await?;
 
         // Set basic options.
-        stdin
-            .write_all(
-                format!(
-                    "setoption name Use NNUE value {}\n",
-                    position.flavor.eval_flavor().is_nnue()
-                )
-                .as_bytes(),
-            )
-            .await?;
         let variant = Variant::from(position.variant);
         if position.flavor == EngineFlavor::MultiVariant {
             stdin
@@ -286,9 +277,6 @@ impl StockfishActor {
         // Go.
         let go = match &position.work {
             Work::Move { level, clock, .. } => {
-                stdin
-                    .write_all(b"setoption name UCI_AnalyseMode value false\n")
-                    .await?;
                 stdin
                     .write_all(
                         format!("setoption name Skill Level value {}\n", level.skill_level())
@@ -320,9 +308,6 @@ impl StockfishActor {
                 go
             }
             Work::Analysis { nodes, depth, .. } => {
-                stdin
-                    .write_all(b"setoption name UCI_AnalyseMode value true\n")
-                    .await?;
                 stdin
                     .write_all(b"setoption name Skill Level value 20\n")
                     .await?;

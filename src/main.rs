@@ -76,6 +76,7 @@ async fn run(opt: Opt, logger: &Logger) {
 
     let endpoint = opt.endpoint();
     logger.info(&format!("Endpoint: {}", endpoint));
+    assert!(endpoint.is_development(), "refusing to use irwin fishnet with lichess.org");
 
     logger.info(&format!(
         "Backlog: Join queue if user backlog >= {:?} or system backlog >= {:?}",

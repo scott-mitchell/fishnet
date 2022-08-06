@@ -2,8 +2,6 @@ use std::{env, fs, fs::File, io, path::Path, process::Command};
 
 use glob::glob;
 
-const EVAL_FILE: &str = "nn-6877cd24400e.nnue";
-
 fn has_target_feature(feature: &str) -> bool {
     env::var("CARGO_CFG_TARGET_FEATURE")
         .unwrap()
@@ -37,7 +35,7 @@ enum Flavor {
 }
 
 impl Target {
-    fn build(&self, flavor: Flavor, src_dir: &'static str, name: &'static str) {
+    fn build(&self, _flavor: Flavor, src_dir: &'static str, name: &'static str) {
         let release = env::var("PROFILE").unwrap() == "release";
         let windows = env::var("CARGO_CFG_TARGET_FAMILY").unwrap() == "windows";
         let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
@@ -93,20 +91,6 @@ impl Target {
                 .success(),
             "$(CXX) --version"
         );
-
-        if flavor == Flavor::Official
-            && !Command::new(&make)
-                .current_dir(src_dir)
-                .env("MAKEFLAGS", env::var("CARGO_MAKEFLAGS").unwrap())
-                .arg("-B")
-                .arg("net")
-                .status()
-                .unwrap()
-                .success()
-        {
-            fs::remove_file(Path::new(src_dir).join(EVAL_FILE)).unwrap();
-            println!("cargo:warning=Deleted corrupted network file {}", EVAL_FILE);
-        }
 
         let mut build_command = Command::new(&make);
         build_command
@@ -167,8 +151,8 @@ impl Target {
 
         self.build(
             Flavor::MultiVariant,
-            "Fairy-Stockfish/src",
-            "fairy-stockfish",
+            "MultiVariant-Stockfish/src",
+            "multivariant-stockfish",
         );
     }
 }
@@ -186,33 +170,6 @@ fn stockfish_build() {
             let sde = cfg!(target_arch = "x86_64");
 
             Target {
-                arch: "x86-64-vnni512",
-                native: has_builder_feature!("avx512dq")
-                    && has_builder_feature!("avx512vl")
-                    && has_builder_feature!("avx512vnni"),
-                sde,
-            }
-            .build_both();
-
-            if has_target_feature("avx512dq")
-                && has_target_feature("avx512vl")
-                && has_target_feature("avx512vnni")
-            {
-                return;
-            }
-
-            Target {
-                arch: "x86-64-avx512",
-                native: has_builder_feature!("avx512f") && has_builder_feature!("avx512bw"),
-                sde,
-            }
-            .build_both();
-
-            if has_target_feature("avx512f") && has_target_feature("avx512bw") {
-                return;
-            }
-
-            Target {
                 arch: "x86-64-bmi2",
                 native: has_builder_feature!("bmi2"),
                 sde,
@@ -224,18 +181,7 @@ fn stockfish_build() {
             }
 
             Target {
-                arch: "x86-64-avx2",
-                native: has_builder_feature!("avx2"),
-                sde,
-            }
-            .build_both();
-
-            if has_target_feature("avx2") {
-                return;
-            }
-
-            Target {
-                arch: "x86-64-sse41-popcnt",
+                arch: "x86-64-modern",
                 native: has_builder_feature!("sse4.1") && has_builder_feature!("popcnt"),
                 sde,
             }
@@ -251,25 +197,6 @@ fn stockfish_build() {
                 sde,
             }
             .build_both();
-        }
-        "aarch64" => {
-            let native = cfg!(target_arch = "aarch64");
-
-            if env::var("CARGO_CFG_TARGET_OS").unwrap() == "macos" {
-                Target {
-                    arch: "apple-silicon",
-                    native,
-                    sde: false,
-                }
-                .build_both();
-            } else {
-                Target {
-                    arch: "armv8",
-                    native,
-                    sde: false,
-                }
-                .build_both();
-            }
         }
         target_arch => {
             unimplemented!("Stockfish build for {} not supported", target_arch);
@@ -297,7 +224,6 @@ fn hooks() {
     println!("cargo:rerun-if-env-changed=MAKE");
     println!("cargo:rerun-if-env-changed=SDE_PATH");
 
-    println!("cargo:rustc-env=EVAL_FILE={}", EVAL_FILE);
     println!("cargo:rerun-if-changed=Stockfish/src/Makefile");
     for entry in glob("Stockfish/src/**/*.cpp").unwrap() {
         println!("cargo:rerun-if-changed={}", entry.unwrap().display());
@@ -306,11 +232,11 @@ fn hooks() {
         println!("cargo:rerun-if-changed={}", entry.unwrap().display());
     }
 
-    println!("cargo:rerun-if-changed=Fairy-Stockfish/src/Makefile");
-    for entry in glob("Fairy-Stockfish/src/**/*.cpp").unwrap() {
+    println!("cargo:rerun-if-changed=MultiVariant-Stockfish/src/Makefile");
+    for entry in glob("MultiVariant-Stockfish/src/**/*.cpp").unwrap() {
         println!("cargo:rerun-if-changed={}", entry.unwrap().display());
     }
-    for entry in glob("Fairy-Stockfish/src/**/*.h").unwrap() {
+    for entry in glob("MultiVariant-Stockfish/src/**/*.h").unwrap() {
         println!("cargo:rerun-if-changed={}", entry.unwrap().display());
     }
 
@@ -320,7 +246,6 @@ fn hooks() {
 fn main() {
     hooks();
     stockfish_build();
-    compress("Stockfish/src", EVAL_FILE);
 
     // Resource compilation may fail when toolchain does not match target,
     // e.g. windows-msvc toolchain with windows-gnu target.

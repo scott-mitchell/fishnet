@@ -209,10 +209,7 @@ impl StockfishActor {
         stdout: &mut Stdout,
         stdin: &mut BufWriter<ChildStdin>,
     ) -> io::Result<()> {
-        if let Some(init) = self.init.take() {
-            stdin
-                .write_all(format!("setoption name EvalFile value {}\n", init.nnue).as_bytes())
-                .await?;
+        if let Some(_init) = self.init.take() {
             stdin
                 .write_all(b"setoption name UCI_Chess960 value true\n")
                 .await?;

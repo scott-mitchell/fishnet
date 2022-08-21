@@ -75,7 +75,8 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo build --release --target x86_64-pc-windows-gnu -vv
+      - run: cargo install --git https://github.com/rust-secure-code/cargo-auditable cargo-auditable
+      - run: cargo auditable build --release --target x86_64-pc-windows-gnu -vv
       - run: mv target/x86_64-pc-windows-gnu/release/fishnet.exe fishnet-x86_64-pc-windows-gnu.exe
       - uses: actions/upload-artifact@v3
         with:

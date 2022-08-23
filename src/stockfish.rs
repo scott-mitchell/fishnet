@@ -1,4 +1,4 @@
-use std::{io, num::NonZeroU8, path::PathBuf, process::Stdio, time::Duration};
+use std::{io, num::NonZeroU8, path::PathBuf, process::Stdio, time::Duration, os::unix::process::CommandExt};
 
 use shakmaty::variant::Variant;
 use tokio::{
@@ -102,19 +102,7 @@ impl From<io::Error> for EngineError {
 
 #[cfg(unix)]
 fn new_process_group(command: &mut Command) -> &mut Command {
-    // SAFETY: The closure is run in a fork, and is not allowed to break
-    // invariants by using raw handles. Can be replaced with safe code once
-    // https://github.com/rust-lang/rust/issues/93857 is stabilized.
-    unsafe {
-        // Stop SIGINT from propagating to child process.
-        command.pre_exec(|| {
-            if libc::setpgid(0, 0) == -1 {
-                Err(io::Error::last_os_error())
-            } else {
-                Ok(())
-            }
-        })
-    }
+    command.process_group(0)
 }
 
 #[cfg(windows)]
